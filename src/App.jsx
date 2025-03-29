@@ -11,6 +11,8 @@ import Select from "@mui/material/Select";
 import Button from "@mui/material/Button";
 
 import CircularProgress from "@mui/material/CircularProgress";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import Tooltip from "@mui/material/Tooltip";
 
 const API_KEY = import.meta.env.VITE_API_KEY;
 
@@ -39,7 +41,7 @@ function App() {
               - Optimised code in ${lang} (use subtle comments, and make sure to add class "Solution" if it is an object oriented language)
               - dry run
               - time and space complexity
-              - Other approaches that can be used`;
+              - Other approaches that can be used (No need to write and code here)`;
 
     setIsLoad(true);
     const result = await model.generateContent(prompt);
@@ -49,25 +51,38 @@ function App() {
   };
 
   const copyCode = async () => {
-    let start = response.indexOf(`\`\`\`${lang.toLowerCase()}`)
-    let end = response.lastIndexOf("```")
-    let code = response.substring(start, end).replace(`\`\`\`${lang.toLowerCase()}`, "")
-    await navigator.clipboard.writeText(code)
-  }
+    let start = response.indexOf(`\`\`\`${lang.toLowerCase()}`);
+    let end = response.lastIndexOf("```");
+    let code = response
+      .substring(start, end)
+      .replace(`\`\`\`${lang.toLowerCase()}`, "");
+    await navigator.clipboard.writeText(code);
+  };
 
   const copyWhole = async () => {
-    await navigator.clipboard.writeText(response)
-  }
+    await navigator.clipboard.writeText(response);
+  };
 
   return (
     <div className="main-body">
+      <a href="https://github.com/shivam-paul-19/codebuddy" target="_blank">
+        <Tooltip title="GitHub Repository">
+          <GitHubIcon
+            sx={{
+              position: "absolute",
+              fontSize: "35px",
+              top: "10px",
+              color: "black",
+              right: "25px",
+            }}
+          />
+        </Tooltip>
+      </a>
+
       <div className="heading">
         <h1>&lt;Code Buddy&gt;</h1>
       </div>
-      <form
-        action=""
-        onSubmit={getQuestion}
-      >
+      <form action="" onSubmit={getQuestion}>
         <TextField
           id="outlined-basic"
           label="Enter the link of the question"
@@ -81,37 +96,37 @@ function App() {
         />
         <br />
         <div className="but-lang">
-        <FormControl
-          sx={{
-            width: "120px",
-            border: "2px solid black",
-            borderRadius: "10px",
-          }}
-        >
-          <InputLabel id="demo-simple-select-label">Language</InputLabel>
-          <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            label="Age"
-            required
+          <FormControl
             sx={{
-              color: "black",
+              width: "120px",
+              border: "2px solid black",
+              borderRadius: "10px",
             }}
           >
-            <MenuItem value={"java"}>Java</MenuItem>
-            <MenuItem value={"Cpp"}>C++</MenuItem>
-            <MenuItem value={"C"}>C</MenuItem>
-            <MenuItem value={"Python"}>Python</MenuItem>
-            <MenuItem value={"javascript"}>JavaScript</MenuItem>
-            <MenuItem value={"typescript"}>TypeScript</MenuItem>
-            <MenuItem value={"C#"}>C#</MenuItem>
-            <MenuItem value={"Dart"}>Dart</MenuItem>
-            <MenuItem value={"Kotlin"}>Kotlin</MenuItem>
-            <MenuItem value={"PHP"}>PHP</MenuItem>
-          </Select>
-        </FormControl>
-            {!isLoad? (
-              <Button
+            <InputLabel id="demo-simple-select-label">Language</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              label="Age"
+              required
+              sx={{
+                color: "black",
+              }}
+            >
+              <MenuItem value={"java"}>Java</MenuItem>
+              <MenuItem value={"Cpp"}>C++</MenuItem>
+              <MenuItem value={"C"}>C</MenuItem>
+              <MenuItem value={"Python"}>Python</MenuItem>
+              <MenuItem value={"javascript"}>JavaScript</MenuItem>
+              <MenuItem value={"typescript"}>TypeScript</MenuItem>
+              <MenuItem value={"C#"}>C#</MenuItem>
+              <MenuItem value={"Dart"}>Dart</MenuItem>
+              <MenuItem value={"Kotlin"}>Kotlin</MenuItem>
+              <MenuItem value={"PHP"}>PHP</MenuItem>
+            </Select>
+          </FormControl>
+          {!isLoad ? (
+            <Button
               sx={{
                 height: "70%",
                 backgroundColor: "#481D24",
@@ -122,20 +137,19 @@ function App() {
             >
               Solve
             </Button>
-            ) : (
-              <Button
-          sx={{
-            height: "70%",
-            backgroundColor: "black",
-            color: "white",
-          }}
-          variant="contained"
-          disabled
-        >
-          Solve
-        </Button>
-            )}
-        
+          ) : (
+            <Button
+              sx={{
+                height: "70%",
+                backgroundColor: "black",
+                color: "white",
+              }}
+              variant="contained"
+              disabled
+            >
+              Solve
+            </Button>
+          )}
         </div>
       </form>
       {isLoad ? (
@@ -151,21 +165,34 @@ function App() {
       ) : null}
       {response != "" ? (
         <>
-        <br />
-        <div style={{
-          margin: "10px",
-          display: "flex",
-          justifyContent: "start",
-          width: "60%",
-          // backgroundColor: "yellow"
-        }}>
-        <Button sx={{color: "white", backgroundColor: "#481D24"}} onClick={copyCode}>Copy Code</Button>&nbsp;&nbsp;&nbsp;
-        <Button sx={{color: "#481D24", backgroundColor: "white"}} onClick={copyWhole}>Copy whole response</Button>
-        </div>
-        <div
-          className="response-box"
-          dangerouslySetInnerHTML={{ __html: `${marked(response)}` }}
-        ></div>
+          <br />
+          <div
+            style={{
+              margin: "10px",
+              display: "flex",
+              justifyContent: "start",
+              width: "60%",
+              // backgroundColor: "yellow"
+            }}
+          >
+            <Button
+              sx={{ color: "white", backgroundColor: "#481D24" }}
+              onClick={copyCode}
+            >
+              Copy Code
+            </Button>
+            &nbsp;&nbsp;&nbsp;
+            <Button
+              sx={{ color: "#481D24", backgroundColor: "white" }}
+              onClick={copyWhole}
+            >
+              Copy whole response
+            </Button>
+          </div>
+          <div
+            className="response-box"
+            dangerouslySetInnerHTML={{ __html: `${marked(response)}` }}
+          ></div>
         </>
       ) : null}
       {response != "" && !isLoad ? (
