@@ -17,14 +17,14 @@ const API_KEY = import.meta.env.VITE_API_KEY;
 function App() {
   let [response, setResponse] = useState("");
   let [isLoad, setIsLoad] = useState(false);
+  let [lang, setLang] = useState("");
 
   const getQuestion = async (event) => {
     event.preventDefault();
     console.log(event);
     let url = event.target[0].value;
-    let lang = event.target[2].value;
-    let quest = url.split("/");
-    await getResponse(url, lang);
+    setLang(event.target[2].value);
+    await getResponse(url, event.target[2].value);
   };
 
   const getResponse = async (prompt, lang) => {
@@ -36,7 +36,7 @@ function App() {
               - Name of the question as heading
               - question explanation (in plain text, not code)
               - Data structures that are used in it
-              - Optimised code in ${lang} (use subtle comments)
+              - Optimised code in ${lang} (use subtle comments, and make sure to add class "Solution" if it is an object oriented language)
               - dry run
               - time and space complexity
               - Other approaches that can be used`;
@@ -47,6 +47,17 @@ function App() {
     setIsLoad(false);
     setResponse(response);
   };
+
+  const copyCode = async () => {
+    let start = response.indexOf(`\`\`\`${lang.toLowerCase()}`)
+    let end = response.lastIndexOf("```")
+    let code = response.substring(start, end).replace(`\`\`\`${lang.toLowerCase()}`, "")
+    await navigator.clipboard.writeText(code)
+  }
+
+  const copyWhole = async () => {
+    await navigator.clipboard.writeText(response)
+  }
 
   return (
     <div className="main-body">
@@ -88,7 +99,7 @@ function App() {
             }}
           >
             <MenuItem value={"java"}>Java</MenuItem>
-            <MenuItem value={"C++"}>C++</MenuItem>
+            <MenuItem value={"Cpp"}>C++</MenuItem>
             <MenuItem value={"C"}>C</MenuItem>
             <MenuItem value={"Python"}>Python</MenuItem>
             <MenuItem value={"javascript"}>JavaScript</MenuItem>
@@ -99,18 +110,32 @@ function App() {
             <MenuItem value={"PHP"}>PHP</MenuItem>
           </Select>
         </FormControl>
-
-        <Button
+            {!isLoad? (
+              <Button
+              sx={{
+                height: "70%",
+                backgroundColor: "#481D24",
+                color: "white",
+              }}
+              variant="contained"
+              type="submit"
+            >
+              Solve
+            </Button>
+            ) : (
+              <Button
           sx={{
             height: "70%",
             backgroundColor: "black",
             color: "white",
           }}
           variant="contained"
-          type="submit"
+          disabled
         >
           Solve
         </Button>
+            )}
+        
         </div>
       </form>
       {isLoad ? (
@@ -125,10 +150,23 @@ function App() {
         </div>
       ) : null}
       {response != "" ? (
+        <>
+        <br />
+        <div style={{
+          margin: "10px",
+          display: "flex",
+          justifyContent: "start",
+          width: "60%",
+          // backgroundColor: "yellow"
+        }}>
+        <Button sx={{color: "white", backgroundColor: "#481D24"}} onClick={copyCode}>Copy Code</Button>&nbsp;&nbsp;&nbsp;
+        <Button sx={{color: "#481D24", backgroundColor: "white"}} onClick={copyWhole}>Copy whole response</Button>
+        </div>
         <div
           className="response-box"
           dangerouslySetInnerHTML={{ __html: `${marked(response)}` }}
         ></div>
+        </>
       ) : null}
       {response != "" && !isLoad ? (
         <div className="response-box">
